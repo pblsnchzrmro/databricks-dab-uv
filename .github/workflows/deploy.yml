@@ -24,13 +24,5 @@ jobs:
       - name: Install Databricks CLI
         run: curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | sh
 
-      - name: Create ~/.databrickscfg
-        run: |
-          echo "[DEFAULT]" > ~/.databrickscfg
-          echo "host = $DATABRICKS_HOST" >> ~/.databrickscfg
-          echo "auth_type = client" >> ~/.databrickscfg
-          echo "client_id = $DATABRICKS_CLIENT_ID" >> ~/.databrickscfg
-          echo "client_secret = $DATABRICKS_CLIENT_SECRET" >> ~/.databrickscfg
-
       - name: Deploy bundle
         run: databricks bundle deploy -t $ENV
