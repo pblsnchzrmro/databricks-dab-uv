@@ -17,10 +17,13 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Install Databricks CLI
-        run: curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | sh
+        uses: databricks/setup-cli@main
+      
+      - name: Run Databricks CLI with debug
+        run: databricks --debug current-user me
 
       - name: Validate bundle
         run: databricks bundle validate -t $ENV
