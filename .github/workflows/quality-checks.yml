@@ -1,0 +1,61 @@
+name: Quality checks
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, edited]
+  push:
+    branches: [dev, main]
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  checks:
+    name: Run tests
+    runs-on: ubuntu-latest
+    environment: ${{ github.base_ref == 'main' && 'prod' || (github.base_ref == 'dev' && 'dev') }}
+    env:
+      DATABRICKS_AUTH_TYPE: github-oidc
+      DATABRICKS_HOST: ${{ vars.DATABRICKS_HOST }}
+      DATABRICKS_CLIENT_ID: ${{ vars.DATABRICKS_CLIENT_ID }}
+      ENV: ${{ vars.ENVIRONMENT }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up UV
+        uses: astral-sh/setup-uv@v2
+
+      - name: Install dependencies
+        run: uv sync --all-extras --group dev
+
+      - name: Run Ruff (lint + format check)
+        run: uv run ruff check . --output-format=github
+
+      - name: Run Mypy (type checking)
+        run: |
+          mkdir -p reports
+          uv run mypy src --pretty --show-error-codes | tee reports/mypy-report.txt
+
+      - name: Install Databricks CLI
+        run: curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | sh
+
+      - name: Run Pytest (with coverage + JSON report)
+        run: |
+          mkdir -p reports
+          uv run pytest \
+            --maxfail=1 \
+            --disable-warnings \
+            -q \
+            --cov=src \
+            --cov-report=xml:reports/coverage.xml \
+            --json-report \
+            --json-report-file=reports/pytest-report.json
+
+      - name: Upload reports as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: analysis-reports
+          path: reports/
