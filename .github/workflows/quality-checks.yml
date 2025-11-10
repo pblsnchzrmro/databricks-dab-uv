@@ -3,8 +3,6 @@ name: Quality checks
 on:
   pull_request:
     types: [opened, synchronize, reopened, edited]
-  push:
-    branches: [dev, main]
 
 permissions:
   id-token: write
