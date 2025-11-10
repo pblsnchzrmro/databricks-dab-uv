@@ -8,43 +8,28 @@ on:
 
 jobs:
   checks:
-    name: Run tests, lint, and type check
+    name: Run tests
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # ------------------------
-      # Install uv (Python included, no setup-python needed)
-      # ------------------------
       - name: Set up UV
         uses: astral-sh/setup-uv@v2
 
-      # ------------------------
-      # Install dependencies
-      # ------------------------
       - name: Install dependencies
-        run: uv sync --all-extras --dev
+        run: uv sync --all-extras --group dev
 
-      # ------------------------
-      # Run Ruff (lint + format check)
-      # ------------------------
-      - name: Run Ruff
+      - name: Run Ruff (lint + format check)
         run: uv run ruff check . --output-format=github
 
-      # ------------------------
-      # Run Mypy (type checking)
-      # ------------------------
-      - name: Run Mypy
+      - name: Run Ty (type checking)
         run: |
           mkdir -p reports
-          uv run mypy src --pretty --show-error-codes --junit-xml=reports/mypy-report.xml
+          uv run ty check src | tee reports/ty-report.txt
 
-      # ------------------------
-      # Run Pytest (with coverage + JSON report)
-      # ------------------------
-      - name: Run Pytest
+      - name: Run Pytest (with coverage + JSON report)
         run: |
           mkdir -p reports
           uv run pytest \
@@ -56,10 +41,7 @@ jobs:
             --json-report \
             --json-report-file=reports/pytest-report.json
 
-      # ------------------------
-      # Upload reports as artifact
-      # ------------------------
-      - name: Upload reports
+      - name: Upload reports as artifact
         uses: actions/upload-artifact@v4
         with:
           name: analysis-reports
