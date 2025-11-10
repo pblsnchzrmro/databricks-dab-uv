@@ -9,11 +9,10 @@ jobs:
   validate:
     runs-on: ubuntu-latest
     environment: ${{ github.base_ref == 'main' && 'prod' || (github.base_ref == 'dev' && 'dev') }}
-
     env:
-      DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
-      DATABRICKS_CLIENT_ID: ${{ secrets.DATABRICKS_CLIENT_ID }}
-      DATABRICKS_CLIENT_SECRET: ${{ secrets.DATABRICKS_CLIENT_SECRET }}
+      DATABRICKS_AUTH_TYPE: github-oidc
+      DATABRICKS_HOST: ${{ vars.DATABRICKS_HOST }}
+      DATABRICKS_CLIENT_ID: ${{ vars.DATABRICKS_CLIENT_ID }}
       ENV: ${{ vars.ENVIRONMENT }}
 
     steps:
