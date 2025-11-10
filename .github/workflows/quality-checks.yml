@@ -1,0 +1,66 @@
+name: Quality checks
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, edited]
+  push:
+    branches: [dev, main]
+
+jobs:
+  checks:
+    name: Run tests, lint, and type check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # ------------------------
+      # Install uv (Python included, no setup-python needed)
+      # ------------------------
+      - name: Set up UV
+        uses: astral-sh/setup-uv@v2
+
+      # ------------------------
+      # Install dependencies
+      # ------------------------
+      - name: Install dependencies
+        run: uv sync --all-extras --dev
+
+      # ------------------------
+      # Run Ruff (lint + format check)
+      # ------------------------
+      - name: Run Ruff
+        run: uv run ruff check . --output-format=github
+
+      # ------------------------
+      # Run Mypy (type checking)
+      # ------------------------
+      - name: Run Mypy
+        run: |
+          mkdir -p reports
+          uv run mypy src --pretty --show-error-codes --junit-xml=reports/mypy-report.xml
+
+      # ------------------------
+      # Run Pytest (with coverage + JSON report)
+      # ------------------------
+      - name: Run Pytest
+        run: |
+          mkdir -p reports
+          uv run pytest \
+            --maxfail=1 \
+            --disable-warnings \
+            -q \
+            --cov=src \
+            --cov-report=term-missing \
+            --json-report \
+            --json-report-file=reports/pytest-report.json
+
+      # ------------------------
+      # Upload reports as artifact
+      # ------------------------
+      - name: Upload reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: analysis-reports
+          path: reports/

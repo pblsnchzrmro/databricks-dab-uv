@@ -1,0 +1,74 @@
+# Databricks local artifacts
+.databricks/
+
+# Build and distribution artifacts
+build/
+dist/
+*.egg-info/
+*.egg
+.eggs/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.venv/
+venv/
+.env/
+env/
+
+# Scratch / temp files
+scratch/**
+!scratch/README.md
+
+# Test / coverage
+.coverage
+htmlcov/
+.tox/
+.pytest_cache/
+.cache/
+.mypy_cache/
+.dmypy.json
+.pyre/
+.pytype/
+reports/
+
+# Ruff and linting caches
+.ruff_cache/
+ruff.toml.bak
+
+# Type checker / static analysis
+.mypy_cache/
+.dmypy.json
+.pyre/
+.pytype/
+
+# IDE and editor configs
+.vscode/
+.idea/
+.spyproject/
+*.swp
+*.swo
+
+# Jupyter / notebooks
+.ipynb_checkpoints/
+*.ipynb_checkpoint
+
+# Logs and temp files
+*.log
+*.tmp
+*.bak
+*.old
+
+# macOS / Windows / Linux system files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Coverage and profiling
+.prof
+.profraw
+*.coverage
+*.lcov

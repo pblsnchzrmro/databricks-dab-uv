@@ -1,0 +1,35 @@
+name: Validate DAB Bundle
+
+on:
+  pull_request:
+    branches:
+      - dev
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    environment: ${{ github.base_ref == 'main' && 'prod' || (github.base_ref == 'dev' && 'stage') }}
+
+    env:
+      DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+      DATABRICKS_CLIENT_ID: ${{ secrets.DATABRICKS_CLIENT_ID }}
+      DATABRICKS_CLIENT_SECRET: ${{ secrets.DATABRICKS_CLIENT_SECRET }}
+      ENV: ${{ vars.ENVIRONMENT }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install Databricks CLI
+        run: curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | sh
+
+      - name: Create ~/.databrickscfg
+        run: |
+          echo "[DEFAULT]" > ~/.databrickscfg
+          echo "host = $DATABRICKS_HOST" >> ~/.databrickscfg
+          echo "auth_type = client" >> ~/.databrickscfg
+          echo "client_id = $DATABRICKS_CLIENT_ID" >> ~/.databrickscfg
+          echo "client_secret = $DATABRICKS_CLIENT_SECRET" >> ~/.databrickscfg
+
+      - name: Validate bundle
+        run: databricks bundle validate -t $ENV
