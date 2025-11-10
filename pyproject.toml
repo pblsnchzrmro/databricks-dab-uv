@@ -13,12 +13,12 @@ dev = [
     "ty>=0.0.1a25",
     # Code completion support for Lakeflow Declarative Pipelines, also install databricks-connect
     "databricks-dlt",
-
     # databricks-connect can be used to run parts of this project locally.
     # Note that for local development, you should use a version that is not newer
     # than the remote cluster or serverless compute you connect to.
     # See also https://docs.databricks.com/dev-tools/databricks-connect.html.
     "databricks-connect>=15.4,<15.5",
+    "mypy>=1.18.2",
 ]
 
 [tool.pytest.ini_options]
@@ -98,18 +98,8 @@ quote-style = "double"
 indent-style = "space"
 skip-magic-trailing-comma = false
 
-[tool.mypy]
-ignore_missing_imports = true
-check_untyped_defs = true
-warn_return_any = true
-warn_unused_ignores = true
-strict_optional = true
+[tool.ty]
+src = ["src", "!tests"]
 
-# Relaja reglas de funciones sin tipar
-disallow_untyped_defs = false
-disallow_untyped_calls = false
-
-# Excluye tests de chequeo estricto
-exclude = [
-  '^tests/.*',
-]
+[tool.ty.rules]
+possibly-missing-import = "ignore"

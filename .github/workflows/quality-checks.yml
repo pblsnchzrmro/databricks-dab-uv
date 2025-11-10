@@ -34,10 +34,10 @@ jobs:
       - name: Run Ruff (lint + format check)
         run: uv run ruff check . --output-format=github
 
-      - name: Run Ty (type checking)
+      - name: Run Mypy (type checking)
         run: |
           mkdir -p reports
-          uv run ty check src | tee reports/ty-report.txt
+          uv run mypy src --pretty --show-error-codes | tee reports/mypy-report.txt
 
       - name: Install Databricks CLI
         run: curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | sh
@@ -50,7 +50,7 @@ jobs:
             --disable-warnings \
             -q \
             --cov=src \
-            --cov-report=term-missing \
+            --cov-report=xml:reports/coverage.xml \
             --json-report \
             --json-report-file=reports/pytest-report.json
 
