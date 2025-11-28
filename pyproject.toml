@@ -19,6 +19,7 @@ dev = [
     # See also https://docs.databricks.com/dev-tools/databricks-connect.html.
     "databricks-connect>=15.4,<15.5",
     "mypy>=1.18.2",
+    "pytest-html>=4.1.1",
 ]
 
 [tool.pytest.ini_options]
@@ -98,8 +99,16 @@ quote-style = "double"
 indent-style = "space"
 skip-magic-trailing-comma = false
 
-[tool.ty]
-src = ["src", "!tests"]
+[tool.mypy]
+ignore_missing_imports = true
+check_untyped_defs = true
+warn_return_any = true
+warn_unused_ignores = true
+strict_optional = true
 
-[tool.ty.rules]
-possibly-missing-import = "ignore"
+disallow_untyped_defs = false
+disallow_untyped_calls = false
+
+exclude = [
+  '^tests/.*',
+]

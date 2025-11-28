@@ -3,8 +3,6 @@ name: Quality checks
 on:
   pull_request:
     types: [opened, synchronize, reopened, edited]
-  push:
-    branches: [dev, main]
 
 permissions:
   id-token: write
@@ -23,7 +21,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up UV
         uses: astral-sh/setup-uv@v2
@@ -42,17 +40,28 @@ jobs:
       - name: Install Databricks CLI
         run: curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | sh
 
-      - name: Run Pytest (with coverage + JSON report)
+      - name: Run Pytest (HTML + JSON + coverage JSON)
         run: |
           mkdir -p reports
           uv run pytest \
             --maxfail=1 \
             --disable-warnings \
-            -q \
             --cov=src \
-            --cov-report=xml:reports/coverage.xml \
+            --cov-report=json:reports/_coverage_raw.json \
             --json-report \
-            --json-report-file=reports/pytest-report.json
+            --json-report-file=reports/_pytest_raw.json \
+            --html=reports/tests-report.html \
+            --self-contained-html
+
+      - name: Pretty-print Pytest JSON → pytest.json
+        run: |
+          jq '.' reports/_pytest_raw.json > reports/pytest.json
+          rm reports/_pytest_raw.json
+
+      - name: Pretty-print Coverage JSON → coverage.json
+        run: |
+          jq '.' reports/_coverage_raw.json > reports/coverage.json
+          rm reports/_coverage_raw.json
 
       - name: Upload reports as artifact
         uses: actions/upload-artifact@v4
