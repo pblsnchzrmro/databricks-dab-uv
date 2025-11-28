@@ -40,23 +40,28 @@ jobs:
       - name: Install Databricks CLI
         run: curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | sh
 
-      - name: Run Pytest (HTML + coverage + JSON)
+      - name: Run Pytest (HTML + JSON + coverage JSON)
         run: |
           mkdir -p reports
           uv run pytest \
             --maxfail=1 \
             --disable-warnings \
             --cov=src \
-            --cov-report=xml:reports/coverage.xml \
-            --cov-report=html:reports/htmlcov \
+            --cov-report=json:reports/_coverage_raw.json \
             --json-report \
-            --json-report-file=reports/pytest-report.json \
+            --json-report-file=reports/_pytest_raw.json \
             --html=reports/tests-report.html \
             --self-contained-html
 
-      - name: Pretty-print Pytest JSON
+      - name: Pretty-print Pytest JSON → pytest.json
         run: |
-          jq '.' reports/pytest-report.json > reports/pytest-report-pretty.json
+          jq '.' reports/_pytest_raw.json > reports/pytest.json
+          rm reports/_pytest_raw.json
+
+      - name: Pretty-print Coverage JSON → coverage.json
+        run: |
+          jq '.' reports/_coverage_raw.json > reports/coverage.json
+          rm reports/_coverage_raw.json
 
       - name: Upload reports as artifact
         uses: actions/upload-artifact@v4
