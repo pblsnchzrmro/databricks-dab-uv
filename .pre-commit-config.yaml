@@ -1,27 +1,35 @@
 repos:
-  # Pre-commit core hooks
+  # Basic file checks
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v6.0.0
     hooks:
       - id: check-merge-conflict
-      - id: end-of-file-fixer
-      - id: trailing-whitespace
       - id: check-yaml
       - id: check-json
 
   # Ruff for linting & formatting
-  - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.14.4
+  - repo: local
     hooks:
       - id: ruff-check
+        name: ruff-check
+        entry: uv run ruff check --fix
+        language: system
+        types: [python]
       - id: ruff-format
+        name: ruff-format
+        entry: uv run ruff format
+        language: system
+        types: [python]
 
   # Mypy for type checking
-  - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.11.2
+  - repo: local
     hooks:
       - id: mypy
-        additional_dependencies: [types-requests, types-PyYAML]
+        name: mypy
+        entry: uv run mypy
+        language: system
+        types: [python]
+        require_serial: true
 
   # Conventional Commits
   - repo: https://github.com/compilerla/conventional-pre-commit

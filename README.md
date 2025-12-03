@@ -61,7 +61,7 @@ uv run pytest
 ### With coverage
 
 ```bash
-uv run pytest --cov=src --cov-report=html
+uv run pytest --cov=src
 ```
 
 ### Linting and formatting
