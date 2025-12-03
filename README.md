@@ -45,7 +45,7 @@ chmod +x scripts/setup.sh
 
 This will install pre-commit hooks that automatically run:
 
-- Basic checks (YAML, JSON, trailing whitespace, etc.)
+- Basic checks (YAML, JSON)
 - Ruff (linting and formatting)
 - Mypy (type checking)
 - Conventional Commits (commit message validation)
