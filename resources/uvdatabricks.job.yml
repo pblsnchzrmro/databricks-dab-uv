@@ -1,0 +1,15 @@
+resources:
+  jobs:
+    uvdatabricks_job:
+      name: uvdatabricks_job
+
+      trigger:
+        periodic:
+          interval: 1
+          unit: DAYS
+
+      tasks:
+        - task_key: load
+          existing_cluster_id: 1015-142535-tds8dcd
+          spark_python_task:
+            python_file: ../src/load.py
